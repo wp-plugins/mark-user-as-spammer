@@ -5,11 +5,11 @@
  * Description: The ability to mark specific users as spammers like on Multisite install.
  * Author: Kolya Korobochkin
  * Author URI: http://korobochkin.com/
- * Version: 1.0.1
+ * Version: 1.0.2
  * Text Domain: mark_user_as_spammer
  * Domain Path: /languages/
  * Requires at least: 4.1.1
- * Tested up to: 4.1.1
+ * Tested up to: 4.2.1
  * License: GPLv2 or later
  */
 class Mark_User_As_Spammer {
@@ -103,8 +103,16 @@ class Mark_User_As_Spammer {
 			'mark_user_as_spammer_nonce'
 		);
 
+		$url = site_url( $url );
+
+		/*
+		 * Always use esc_url() before output the links!
+		 * wp_nonce_url() already pass url to esc_html and script tags will be encoded but we need armor to protect URL from XSS
+		 */
+		$url = esc_url( $url );
+
 		$actions['spammer'] = '<a href="'
-			. site_url( $url )
+			. $url
 			. '" class="mark-user-as-spammer" title="' . (
 				$is_spammer ?
 					esc_attr_x ('Unban user. He will be able to log in on site.', 'Verb. Mark user (account) like non spammer account', 'mark_user_as_spammer')
@@ -248,7 +256,7 @@ class Mark_User_As_Spammer {
 						break;
 				}
 				?>
-				<div class="<?php echo $is_failure == true ? 'error' : 'updated'; ?> fade">
+				<div class="<?php echo $is_failure == true ? 'error' : 'updated'; ?> fade notice is-dismissible">
 					<p><?php echo $message; ?></p>
 				</div>
 				<?php
